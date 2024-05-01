@@ -20,7 +20,7 @@ void processInput(GLFWwindow* window);
 int main(void)
 {
 	// VBO = vertex buffer object
-	unsigned int VBO;
+	unsigned int VBO_1, VBO_2;
 	unsigned int VAO;
 	unsigned int vertexShader;
 	unsigned int fragmentShader;
@@ -117,21 +117,25 @@ int main(void)
 
 	//glViewport(0, 0, 800, 600);
 
-	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBO_1);
+	glGenBuffers(1, &VBO_2);
+	printf("VBO 1: %d", VBO_1);
+	printf("\nVBO 2: %d", VBO_2);
+
 	glGenVertexArrays(1, &VAO);
     	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 	glBindVertexArray(VAO);
 
 	// 0. copy our vertices array in a buffer for OpenGL to use
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_1);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_2), vertices_2, GL_STATIC_DRAW);
-	// ;
+
 	// 1. then set the vertex attributes pointers
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
     	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    	glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
 	//glUseProgram(shaderProgram);
 	//glBindVertexArray(VAO);
@@ -144,8 +148,8 @@ int main(void)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//glUseProgram(shaderProgram);
-		//glBindVertexArray(VAO);
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
@@ -169,3 +173,32 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, 1);
 	}
 }
+
+
+
+/*
+ *  quando vogliamo disegnare un trinangolo dobbiamo creare un array che i 3 vertici in 3D, quindi un array di nove elementi disposti in ordine x1, y1, z1;
+ *  Una volta dichiarato l'array bisogna inviarlo in input al primo processo della scheda video, il vertex shader, attraverso la memoria della scheda video;
+ *  l'invio di dati alla memoria della scheda video viene fatto attraverso il "vertex buffer objects (VBO)", che può salvare tanti vertici;
+ *  Un VBO è un oggetto OpenGL ed ha un ID unico corrispondente a quel buffer, è possibile generarlo con il seguente codice:
+ *   1| unsigned int VBO;
+ *   2| glGenBuffers(1, &VBO);  // man page of function: https://registry.khronos.org/OpenGL-Refpages/gl4/
+ *
+ *  una volta acreato ul buffer, possiamo fare il bind del buffer a un tipo di buffer:
+ *  - GL_ARRAY_BUFFER: questo è il tipo di buffer per i vertx buffer, cio che ci server per il triangolo
+ *  con la seguente funzione:
+ *   1| glBindBuffer(GL_ARRAY_BUFFER, VBO);
+ *  
+ *  per copiare l'array di vertici al buffer utilizziamo la seguente funzione:
+ *   1| glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+ *  // GL_ARRAY_BUFFER è il buffer a cui vogliamo copiare i vertici, e fa riferimento al oggetto VBO
+ *  // il quarto parametro è un opzione per la GPU: GL_STREAM_DRAW, GL_STATIC_DRAW e GL_DYNAMIC_DRAW
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
