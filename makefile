@@ -3,5 +3,9 @@ game.exe: main.c .\bin\gl.a
 .\bin\gl.a: .\src\gl.c
 	gcc -c .\src\gl.c -o .\bin\gl.a -I .\include
 clean:
-	del /Q /F game.exe
+	@del /Q /F game.exe
+	@del /q /f /s *~
+	@del /q /f /s source\*~
+	@del /q /f /s include\*~
+	@echo deleted all bin and vim files
 
